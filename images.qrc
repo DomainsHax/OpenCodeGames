@@ -1,0 +1,24 @@
+<RCC>
+    <qresource prefix="/">
+        <file>images/HomeButton.png</file>
+        <file>images/Menu.png</file>
+        <file>images/MenuBar.png</file>
+        <file>images/PlayButton.png</file>
+        <file>images/QuitButton.png</file>
+        <file>images/HomeButtonPressed.png</file>
+        <file>images/PlayButtonPressed.png</file>
+        <file>images/QuitButtonPressed.png</file>
+        <file>images/PlayCenterWidget.png</file>
+        <file>images/StatisticsButton.png</file>
+        <file>images/StatisticsButtonPressed.png</file>
+        <file>images/SettingsButton.png</file>
+        <file>images/SettingsButtonPressed.png</file>
+        <file>images/ProgressBarActived.png</file>
+        <file>images/ProgressBarDeactived.png</file>
+        <file>images/HomeCenterWidget.png</file>
+        <file>images/SettingsCenterWidget.png</file>
+        <file>images/SettingsText.png</file>
+        <file>images/SaveButton.png</file>
+        <file>images/SaveButtonPressed.png</file>
+    </qresource>
+</RCC>
