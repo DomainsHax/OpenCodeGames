@@ -28,13 +28,14 @@ private slots:
     void on_QuitButton_clicked();
     void on_SSaveButton_clicked();
     void on_SCancelButton_clicked();
+    void SettingsUsername();
+    void SettingsPassword();
 
 private:
     Ui::OpenCodeGames *ui;
     QHostAddress addr;
     QTcpSocket connection_info;
-    QString username;
-    QString token = "63253fa398dfa1e0c67d04e512f9d79f953bf074cd592dbcf9692a5e71e9ac0c";
+    QString username, token = "63253fa398dfa1e0c67d04e512f9d79f953bf074cd592dbcf9692a5e71e9ac0c";
     int LevelValue, ProgressValue, ProgressEnd, ProgressPercentual, Progress;
 };
 

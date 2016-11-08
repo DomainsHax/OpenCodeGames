@@ -34,8 +34,8 @@ void OpenCodeGames::startRead()
 {
     connection_info.waitForReadyRead();
     const std::string status_s = QString::fromStdString(QByteArray(connection_info.read(800)).toStdString()).toStdString();
-    std::regex regex_info_results("^INFO_RESULTS ([a-zA-Z0-9]+) ([a-zA-Z0-9]+) ([0-9]+) ([0-9]+) ([0-9]+)$");
-    std::regex regex_set_username("^SET_USERNAME ([a-zA-Z0-9]+)$");
+    std::regex regex_info_results("^INFO_RESULTS ([a-zA-Z0-9.-_-]+) ([a-zA-Z0-9]+) ([0-9]+) ([0-9]+) ([0-9]+)$");
+    std::regex regex_set_username("^SET_USERNAME ([a-zA-Z0-9.-_-]+)$");
     std::smatch match;
 
     if(std::regex_match(status_s, regex_info_results) && std::regex_search(status_s.begin(), status_s.end(), match, regex_info_results))
@@ -62,8 +62,16 @@ void OpenCodeGames::startRead()
         ui->SUsernameValue->setText(username);
         qDebug() << "Username is changed\n";
     }
-    else if(status_s == "SET_PASSWORD TRUE") qDebug() << "Password is changed\n";
+    else if(status_s == "USERNAME_ALREADY_EXISTS") qDebug() << "Username already exists\n";
+    else if(status_s == "USERNAME_ALREADY_SETTED") qDebug() << "Username already setted\n";
+    else if(status_s == "NO-CHANGE_USERNAME") qDebug() << "Username isn't changed (chars incorrect)\n";
 
+    else if(status_s == "SET_PASSWORD") qDebug() << "Password is changed\n";
+    else if(status_s == "PASSWORD_ALREADY_SETTED") qDebug() << "Password is already setted\n";
+    else if(status_s == "SET_PASSWORD_INCORRECT") qDebug() << "Last Password isn't correct\n";
+    else if(status_s == "NO-CHANGE_PASSWORD") qDebug() << "Password isn't changed (chars incorrect)\n";
+
+    else if(status_s == "TOKEN_DOESNT_EXISTS") qDebug() << "token doesn't exists\n";
 }
 
 void OpenCodeGames::CenterDisp(int disposition)
@@ -84,26 +92,36 @@ void OpenCodeGames::on_QuitButton_clicked(){ close(); }
 
 void OpenCodeGames::on_SSaveButton_clicked()
 {
-    if(username != ui->SUsernameValue->text())
+    if((username != ui->SUsernameValue->text())   &&   (!ui->SPasswordValue->text().isEmpty() && !ui->SNewPasswordValue->text().isEmpty() && !ui->SRetypeNewPasswordValue->text().isEmpty()))
     {
-        if(!ui->SUsernameValue->text().isEmpty())
-        {
-            if(ui->SUsernameValue->text().length() >= 3 && ui->SUsernameValue->text().length() <= 16)
-            {
-                Connection(std::string("SETTINGS_USERNAME " + token.toStdString() + " " + ui->SUsernameValue->text().toStdString()));
-            }
-        }
+        SettingsUsername();
+        QTimer::singleShot(500,this,SLOT(SettingsPassword()));
     }
+    else if(username != ui->SUsernameValue->text())
+        SettingsUsername();
+    else if(!ui->SPasswordValue->text().isEmpty() && !ui->SNewPasswordValue->text().isEmpty() && !ui->SRetypeNewPasswordValue->text().isEmpty())
+        SettingsPassword();
+}
 
-    if(!ui->SPasswordValue->text().isEmpty() && !ui->SNewPasswordValue->text().isEmpty() && !ui->SRetypeNewPasswordValue->text().isEmpty())
+void OpenCodeGames::SettingsUsername()
+{
+    if(!ui->SUsernameValue->text().isEmpty())
     {
-        if(ui->SNewPasswordValue->text() == ui->SRetypeNewPasswordValue->text())
-        {
-            if((ui->SPasswordValue->text().length() >= 6 && ui->SPasswordValue->text().length() <= 32) && (ui->SNewPasswordValue->text().length() >= 6 && ui->SNewPasswordValue->text().length() <= 32) && (ui->SRetypeNewPasswordValue->text().length() >= 6 && ui->SRetypeNewPasswordValue->text().length() <= 32))
-            {
-                Connection(std::string("SETTINGS_PASSWORD " + token.toStdString() + " " + ui->SNewPasswordValue->text().toStdString()));
-            }
-        }
+        if(ui->SUsernameValue->text().length() >= 3 && ui->SUsernameValue->text().length() <= 16)
+            Connection(std::string("SETTINGS_USERNAME " + token.toStdString() + " " + ui->SUsernameValue->text().toStdString()));
+        else if(ui->SUsernameValue->text().length() <= 3) qDebug() << "Username < 3 chars";
+        else if(ui->SUsernameValue->text().length() >= 16) qDebug() << "Username > 16 chars";
+    }
+}
+
+void OpenCodeGames::SettingsPassword()
+{
+    if(ui->SNewPasswordValue->text() == ui->SRetypeNewPasswordValue->text())
+    {
+        if((ui->SPasswordValue->text().length() >= 6 && ui->SPasswordValue->text().length() <= 32) && (ui->SNewPasswordValue->text().length() >= 5 && ui->SNewPasswordValue->text().length() <= 32) && (ui->SRetypeNewPasswordValue->text().length() >= 5 && ui->SRetypeNewPasswordValue->text().length() <= 32))
+            Connection(std::string("SETTINGS_PASSWORD " + token.toStdString() + " " + ui->SPasswordValue->text().toStdString() + " " + ui->SNewPasswordValue->text().toStdString()));
+        else if(ui->SNewPasswordValue->text().length() <= 6) qDebug() << "Password < 6 chars";
+        else if(ui->SNewPasswordValue->text().length() >= 32) qDebug() << "Password > 32 chars";
     }
 }
 
