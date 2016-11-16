@@ -69,30 +69,6 @@
      <property name="styleSheet">
       <string notr="true">#HomeCenterWidget{ background-image: url(:/images/HomeCenterWidget.png); }</string>
      </property>
-     <widget class="QLabel" name="UserNameValue">
-      <property name="geometry">
-       <rect>
-        <x>5</x>
-        <y>5</y>
-        <width>330</width>
-        <height>40</height>
-       </rect>
-      </property>
-      <property name="font">
-       <font>
-        <pointsize>16</pointsize>
-        <weight>75</weight>
-        <italic>false</italic>
-        <bold>true</bold>
-       </font>
-      </property>
-      <property name="text">
-       <string>Username</string>
-      </property>
-      <property name="alignment">
-       <set>Qt::AlignCenter</set>
-      </property>
-     </widget>
      <widget class="QLabel" name="NEWSLabel">
       <property name="geometry">
        <rect>
@@ -185,17 +161,17 @@
      <widget class="QLabel" name="ProgressLevel">
       <property name="geometry">
        <rect>
-        <x>14</x>
-        <y>52</y>
+        <x>15</x>
+        <y>53</y>
         <width>34</width>
         <height>24</height>
        </rect>
       </property>
       <property name="font">
        <font>
-        <pointsize>14</pointsize>
-        <weight>75</weight>
-        <bold>true</bold>
+        <pointsize>13</pointsize>
+        <weight>50</weight>
+        <bold>false</bold>
        </font>
       </property>
       <property name="text">
@@ -204,12 +180,15 @@
       <property name="alignment">
        <set>Qt::AlignCenter</set>
       </property>
+      <property name="textInteractionFlags">
+       <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+      </property>
      </widget>
      <widget class="QLabel" name="ProgressValue">
       <property name="geometry">
        <rect>
         <x>54</x>
-        <y>66</y>
+        <y>67</y>
         <width>164</width>
         <height>12</height>
        </rect>
@@ -217,9 +196,9 @@
       <property name="font">
        <font>
         <pointsize>7</pointsize>
-        <weight>75</weight>
+        <weight>50</weight>
         <italic>false</italic>
-        <bold>true</bold>
+        <bold>false</bold>
        </font>
       </property>
       <property name="styleSheet">
@@ -230,6 +209,33 @@
       </property>
       <property name="alignment">
        <set>Qt::AlignCenter</set>
+      </property>
+      <property name="textInteractionFlags">
+       <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
+      </property>
+     </widget>
+     <widget class="QLabel" name="UserNameValue">
+      <property name="geometry">
+       <rect>
+        <x>5</x>
+        <y>5</y>
+        <width>330</width>
+        <height>40</height>
+       </rect>
+      </property>
+      <property name="font">
+       <font>
+        <pointsize>16</pointsize>
+       </font>
+      </property>
+      <property name="text">
+       <string>TextLabel</string>
+      </property>
+      <property name="alignment">
+       <set>Qt::AlignCenter</set>
+      </property>
+      <property name="textInteractionFlags">
+       <set>Qt::LinksAccessibleByMouse|Qt::TextSelectableByMouse</set>
       </property>
      </widget>
     </widget>
@@ -254,8 +260,35 @@
       </font>
      </property>
      <property name="styleSheet">
-      <string notr="true">#PlayCenterWidget{ background-image: url(:/images/PlayCenterWidget.png); }</string>
+      <string notr="true">#PlayCenterWidget{ background-image: url(:/images/PlayCenterWidget.png); }
+#PlayScrollArea{ border: none; }</string>
      </property>
+     <widget class="QScrollArea" name="PlayScrollArea">
+      <property name="geometry">
+       <rect>
+        <x>7</x>
+        <y>7</y>
+        <width>326</width>
+        <height>366</height>
+       </rect>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">background-color: #c0c0c0;</string>
+      </property>
+      <property name="widgetResizable">
+       <bool>true</bool>
+      </property>
+      <widget class="QWidget" name="PlayScrollAreaWidget">
+       <property name="geometry">
+        <rect>
+         <x>0</x>
+         <y>0</y>
+         <width>326</width>
+         <height>366</height>
+        </rect>
+       </property>
+      </widget>
+     </widget>
     </widget>
     <widget class="QWidget" name="SettingsCenterWidget" native="true">
      <property name="enabled">
