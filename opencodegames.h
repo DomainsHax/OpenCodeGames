@@ -25,13 +25,19 @@ class OpenCodeGames : public QWidget
 public:
     explicit OpenCodeGames(QWidget *parent = 0);
     ~OpenCodeGames();
-    void Connection(std::string text_string);
+    void Connection(const QJsonObject jsonObjConn);
+    void ConnectionGames(const QJsonObject jsonObj);
+    void StartPageDisp(int disposition);
     void CenterDisp(int disposition);
+    std::string json_to_string(const QJsonObject jsonObj);
 
 private slots:
-    void startRead();
     void GamesListConnect();
     void PlayerStatsConnect();
+    void on_button_Register_clicked();
+    void on_button_Login_clicked();
+    void on_L_RegisterButton_clicked();
+    void on_R_LoginButton_clicked();
     void on_HomeButton_clicked();
     void on_SettingsButton_clicked();
     void on_PlayButton_clicked();
@@ -41,13 +47,15 @@ private slots:
     void SettingsUsername();
     void SettingsPassword();
     void Games_List();
+    void InstallButton(int);
 
 private:
     Ui::OpenCodeGames *ui;
     QHostAddress addr;
-    QTcpSocket connection_info;
-    QString username, token = "63253fa398dfa1e0c67d04e512f9d79f953bf074cd592dbcf9692a5e71e9ac0c";
-    int LevelValue, ProgressValue, ProgressEnd, ProgressPercentual, Progress;
+    QString username, token;
+    bool LoginCompleted = false, RegisterCompleted = false;
+    int LevelValue, ProgressValue, ProgressEnd, Progress;
+    float ProgressPercentual;
     int AfterID = 1;
     std::map<int, StructGames> MapGames;
 };

@@ -20,5 +20,18 @@
         <file>images/SettingsText.png</file>
         <file>images/SaveButton.png</file>
         <file>images/SaveButtonPressed.png</file>
+        <file>images/LoginCenter.png</file>
+        <file>images/RegisterCenter.png</file>
+        <file>images/LogText.png</file>
+        <file>images/R_LoginButton.png</file>
+        <file>images/R_LoginButtonPressed.png</file>
+        <file>images/L_RegisterButton.png</file>
+        <file>images/L_RegisterButtonPressed.png</file>
+        <file>images/CancelButton.png</file>
+        <file>images/CancelButtonPressed.png</file>
+        <file>images/RegisterButton.png</file>
+        <file>images/RegisterButtonPressed.png</file>
+        <file>images/LoginButton.png</file>
+        <file>images/LoginButtonPressed.png</file>
     </qresource>
 </RCC>
