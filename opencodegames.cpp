@@ -1,5 +1,6 @@
 #include "opencodegames.h"
 #include "ui_opencodegames.h"
+#include "filedownloader.h"
 
 #include <QPushButton>
 #include <QVBoxLayout>
@@ -15,6 +16,12 @@ OpenCodeGames::OpenCodeGames(QWidget *parent) : QWidget(parent), ui(new Ui::Open
     ui->setupUi(this);
     CenterDisp(1);
     StartPageDisp(1);
+
+    os = QSysInfo::kernelType();
+    if (QSysInfo::WordSize == 32) architecture = 32;
+    else architecture = 64;
+
+    std::cout << os.toStdString() << "  " << architecture;
 
     QHostInfo ip = QHostInfo::fromName("localhost");
     if(!ip.addresses().isEmpty()) addr = ip.addresses().first();
@@ -32,7 +39,7 @@ void OpenCodeGames::Connection(const QJsonObject jsonObjConn)
     //READ
     connection_info.waitForReadyRead();
     QByteArray response = connection_info.read(800);
-    QJsonObject jsonObj = QJsonDocument::fromJson(response).object();
+    const QJsonObject jsonObj = QJsonDocument::fromJson(response).object();
 
     if(jsonObj.value("method") == "login_completed")
     {
@@ -48,9 +55,21 @@ void OpenCodeGames::Connection(const QJsonObject jsonObjConn)
 
         qDebug() << "LOGIN_COMPLETED " << username_login << " " << token;
     }
-    else if(jsonObj.value("method") == "account_no_verified"){ qDebug() << "The Account isn't verified"; ui->status_Login->setText("The Account isn't verified"); }
-    else if(jsonObj.value("method") == "account_password_invalid"){ qDebug() << "Password invalid"; ui->status_Login->setText("Password invalid"); }
-    else if(jsonObj.value("method") == "account_inexistent"){ qDebug() << "The Account is inexistent"; ui->status_Login->setText("The Account is inexistent"); }
+    else if(jsonObj.value("method") == "account_no_verified")
+    {
+        qDebug() << "The Account isn't verified";
+        ui->status_Login->setText("The Account isn't verified");
+    }
+    else if(jsonObj.value("method") == "account_password_invalid")
+    {
+        qDebug() << "Password invalid";
+        ui->status_Login->setText("Password invalid");
+    }
+    else if(jsonObj.value("method") == "account_inexistent")
+    {
+        qDebug() << "The Account is inexistent";
+        ui->status_Login->setText("The Account is inexistent");
+    }
     else if(jsonObj.value("method") == "register_completed")
     {
         QString username_register = jsonObj.value("username").toString();
@@ -71,7 +90,8 @@ void OpenCodeGames::Connection(const QJsonObject jsonObjConn)
         ui->status_Register->setText(error_str);
         qDebug() << "NO-REGISTER " << error_str;
     }
-    else if(jsonObj.value("method") == "no-register_lenght") ui->status_Register->setText("NO-REGISTER_LENGHT");
+    else if(jsonObj.value("method") == "no-register_lenght")
+        ui->status_Register->setText("NO-REGISTER_LENGHT");
     else if(jsonObj.value("method") == "info_results")
     {
         username = jsonObj.value("username").toString();
@@ -109,30 +129,42 @@ void OpenCodeGames::Connection(const QJsonObject jsonObjConn)
             MapGames[i + 1].Server = jsonObjGame.value("server").toString();
             MapGames[i + 1].Port = jsonObjGame.value("port").toInt();
             MapGames[i + 1].Version = jsonObjGame.value("version").toString();
+            MapGames[i + 1].files = jsonObjGame.value("files").toArray();
+
+            qDebug() << MapGames[i + 1].files;
         }
 
         Games_List();
-        qDebug() << "GAMES";
+        std::cout << "GAMES";
     }
     else if(jsonObj.value("method") == "set_username")
     {
         username = jsonObj.value("username").toString();
         ui->UserNameValue->setText(username);
         ui->SUsernameValue->setText(username);
-        qDebug() << "Username is changed " << username;
+        std::cout << "Username is changed " << username.toStdString();
     }
-    else if(jsonObj.value("method") == "username_already_setted") qDebug() << "Username already setted";
-    else if(jsonObj.value("method") == "username_already_exists") qDebug() << "Username already exists";
-    else if(jsonObj.value("method") == "no-change_username") qDebug() << "Username isn't changed (chars incorrect)";
-    else if(jsonObj.value("method") == "set_password") qDebug() << "Password is changed";
-    else if(jsonObj.value("method") == "password_already_setted") qDebug() << "Password is already setted";
-    else if(jsonObj.value("method") == "set_password_incorrect") qDebug() << "Last Password isn't correct";
-    else if(jsonObj.value("method") == "no-change_password") qDebug() << "Password isn't changed (chars incorrect)";
-    else if(jsonObj.value("method") == "token_doesnt_exists") qDebug() << "Token doesn't exists";
-    else if(jsonObj.value("method") == "invalid-request") qDebug() << "Invalid Request";
+    else if(jsonObj.value("method") == "username_already_setted")
+        qDebug() << "Username already setted";
+    else if(jsonObj.value("method") == "username_already_exists")
+        qDebug() << "Username already exists";
+    else if(jsonObj.value("method") == "no-change_username")
+        qDebug() << "Username isn't changed (chars incorrect)";
+    else if(jsonObj.value("method") == "set_password")
+        qDebug() << "Password is changed";
+    else if(jsonObj.value("method") == "password_already_setted")
+        qDebug() << "Password is already setted";
+    else if(jsonObj.value("method") == "set_password_incorrect")
+        qDebug() << "Last Password isn't correct";
+    else if(jsonObj.value("method") == "no-change_password")
+        qDebug() << "Password isn't changed (chars incorrect)";
+    else if(jsonObj.value("method") == "token_doesnt_exists")
+        qDebug() << "Token doesn't exists";
+    else if(jsonObj.value("method") == "invalid-request")
+        qDebug() << "Invalid Request";
 }
 
-void OpenCodeGames::GamesListConnect(){ QJsonObject jsonObj; jsonObj.insert("method", "games"); jsonObj.insert("token", token); Connection(jsonObj); }
+void OpenCodeGames::GamesListConnect(){ QJsonObject jsonObj; jsonObj.insert("method", "games"); jsonObj.insert("token", token); jsonObj.insert("os", os); jsonObj.insert("architecture", architecture); Connection(jsonObj); }
 void OpenCodeGames::PlayerStatsConnect(){ QJsonObject jsonObj; jsonObj.insert("method", "info_username"); jsonObj.insert("token", token); Connection(jsonObj); }
 
 std::string OpenCodeGames::json_to_string(const QJsonObject jsonObj){ return QString(QJsonDocument(jsonObj).toJson(QJsonDocument::Compact)).toStdString(); }
@@ -220,63 +252,91 @@ void OpenCodeGames::on_QuitButton_clicked(){ close(); }
 
 void OpenCodeGames::Games_List()
 {
+    QWidget *panel_games = new QWidget;
+    panel_games->setStyleSheet("background-color: #c0c0c0");
+    QScrollArea *games_scroll = new QScrollArea;
     QVBoxLayout *GamesScrollLayout = new QVBoxLayout;
+
     int max = MapGames.size();
 
     for(int i = 1; i < max + 1; i++)
     {
-        QWidget *GameStatus = new QWidget, *pic = new QWidget;
-        QLabel *Name = new QLabel(MapGames[i].Name);
-        QGridLayout *GameStatusLayout = new QGridLayout;
-        QPushButton *Status = new QPushButton;
-
-        QString Version = MapGames[i].Version, Vers = NULL, dir = "/home/domainshax/OpenCodeGames/OpenCodeGames/Games/" + MapGames[i].Name;
-        QDir *DIRECTORY = new QDir(dir);
-        QFile *VERSION = new QFile(dir + "/VERSION.txt"), *EXEC = new QFile(dir + "/" + MapGames[i].Name);
-
-        if(DIRECTORY->exists())
-            if(VERSION->exists()){ VERSION->open(QIODevice::ReadOnly); Vers = VERSION->readAll(); }
-
-        GameStatus->setStyleSheet("background-color:grey;");
-        if(max <= 4) GameStatus->setFixedSize(306, 83);
-        else GameStatus->setFixedSize(292, 84);
-
-        pic->setFixedSize(65, 65);
-        pic->setStyleSheet("background-color:blue;");
-
-        Name->setFixedSize(150, 15);
-        Name->setAlignment(Qt::AlignCenter);
-        Name->setTextInteractionFlags(Qt::LinksAccessibleByMouse | Qt::TextSelectableByMouse);
-
-        Status->setFixedSize(45, 30);
-
-        GameStatusLayout->addWidget(pic, 0, 0, 0, 0, Qt::AlignLeft);
-        GameStatusLayout->addWidget(Name, 0, 2, 0, 4, Qt::AlignTop);
-
-        if(Vers == Version && DIRECTORY->exists() && VERSION->exists() && EXEC->exists())
+        auto it = MapGames.find(i);
+        if(it != MapGames.end())
         {
-            Status->setText("Play");
-        }
-        else if(!DIRECTORY->exists() && !EXEC->exists() && !VERSION->exists())
-        {
-            Status->setText("Install");
+            it->second.NameLabel->setText(it->second.Name);
+            it->second.Status->setStyleSheet("font-size: 8pt");
+            it->second.dir = "/home/domainshax/OpenCodeGames/OpenCodeGames/Games/" + it->second.Name;
 
-            QSignalMapper* signalMapper = new QSignalMapper (this) ;
-            connect (Status, SIGNAL(clicked()), signalMapper, SLOT(map())) ;
-            signalMapper -> setMapping (Status, i) ;
-            connect (signalMapper, SIGNAL(mapped(int)), this, SLOT(InstallButton(int))) ;
-        }
-        else if((Vers != Version or !EXEC->exists() or !VERSION->exists()))
-        {
-            Status->setText("Update");
-        }
+            QString Version = it->second.Version, Vers;
+            QDir *DIRECTORY = new QDir(it->second.dir);
+            QFile *VERSION = new QFile(it->second.dir + "/VERSION.txt");
 
-        GameStatusLayout->addWidget(Status, 1, 5, 1, 1, Qt::AlignBottom);
-        GamesScrollLayout->addWidget(GameStatus);
-        GameStatus->setLayout(GameStatusLayout);
+            if(DIRECTORY->exists()){ std::cout << "Directory exists " << it->second.dir.toStdString();
+                if(VERSION->exists()){ VERSION->open(QIODevice::ReadOnly); QString VersRead = VERSION->readAll(); for(int ver = 0; ver < Version.size(); ver++) Vers += VersRead[ver]; }}
+
+            it->second.GameStatus->setStyleSheet("background-color:grey;");
+            if(max <= 4) it->second.GameStatus->setFixedSize(306, 83);
+            else it->second.GameStatus->setFixedSize(288, 84);
+
+            it->second.pic->setFixedSize(65, 65);
+            it->second.pic->setStyleSheet("background-color:blue;");
+
+            it->second.NameLabel->setFixedSize(150, 15);
+            it->second.NameLabel->setAlignment(Qt::AlignCenter);
+            it->second.NameLabel->setTextInteractionFlags(Qt::LinksAccessibleByMouse | Qt::TextSelectableByMouse);
+
+            it->second.GameStatusLayout->addWidget(it->second.pic, 0, 0, 0, 0, Qt::AlignLeft);
+            it->second.GameStatusLayout->addWidget(it->second.NameLabel, 0, 2, 0, 4, Qt::AlignTop);
+
+            int n_files_exists = 0;
+            QJsonArray files = it->second.files;
+            for(int file = 0; file < files.size(); file++)
+            {
+                QFile* File = new QFile(it->second.dir + '/' + files[file].toString());
+                if(File->exists()) n_files_exists++;
+            }
+
+            std::cout << Vers.toStdString() << "  " << Version.toStdString();
+
+            if(Vers == Version/* && DIRECTORY->exists() && VERSION->exists() && n_files_exists == (files.size() - 1)*/)
+            {
+                it->second.Status->setFixedSize(60, 30);
+                it->second.status = 1;
+                it->second.Status->setText("Play");
+            }
+            else
+            {
+                it->second.Status->setFixedSize(110, 30);
+                it->second.status = 2;
+                it->second.Status->setText("Install Vers " + Version);
+
+                QSignalMapper* signalMapper = new QSignalMapper (this);
+                connect(it->second.Status, SIGNAL(clicked()), signalMapper, SLOT(map()));
+                signalMapper->setMapping (it->second.Status, i);
+                connect(signalMapper, SIGNAL(mapped(int)), this, SLOT(InstallButton(int)));
+                std::cout << i << " setted status to install";
+            }
+
+            it->second.GameStatusLayout->addWidget(it->second.Status, 1, 5, 1, 1, Qt::AlignBottom);
+            GamesScrollLayout->addWidget(it->second.GameStatus);
+            it->second.GameStatus->setLayout(it->second.GameStatusLayout);
+        }
     }
 
-    ui->PlayScrollAreaWidget->setLayout(GamesScrollLayout);
+    panel_games->setLayout(GamesScrollLayout);
+
+    games_scroll->setWidget(panel_games);
+
+    //CLEAR LAYOUT
+    QLayoutItem *child;
+    while ((child = GamesLayout->takeAt(0)) != 0)
+        delete child->widget();
+
+    GamesLayout->addWidget(games_scroll);
+
+    ui->PlayCenterWidget->setLayout(GamesLayout);
+
 }
 
 void OpenCodeGames::on_SSaveButton_clicked()
@@ -294,14 +354,14 @@ void OpenCodeGames::SettingsUsername()
 {
     if(ui->SUsernameValue->text().length() >= 3 && ui->SUsernameValue->text().length() <= 16)
     { QJsonObject jsonObj; jsonObj.insert("method", "settings_username"); jsonObj.insert("token", token); jsonObj.insert("username", ui->SUsernameValue->text()); Connection(jsonObj); }
-    else qDebug() << "Username < 3 chars";
+    else std::cout << "Username < 3 chars";
 }
 
 void OpenCodeGames::SettingsPassword()
 {
     if((ui->SPasswordValue->text().length() >= 6 && ui->SPasswordValue->text().length() <= 32) && (ui->SNewPasswordValue->text().length() >= 6 && ui->SNewPasswordValue->text().length() <= 32) && (ui->SRetypeNewPasswordValue->text().length() >= 6 && ui->SRetypeNewPasswordValue->text().length() <= 32))
     { QJsonObject jsonObj; jsonObj.insert("method", "settings_password"); jsonObj.insert("token", token); jsonObj.insert("password", ui->SPasswordValue->text()); jsonObj.insert("new_password", ui->SNewPasswordValue->text()); Connection(jsonObj); }
-    else qDebug() << "Password < 6 chars";
+    else std::cout << "Password < 6 chars";
 }
 
 void OpenCodeGames::on_SCancelButton_clicked()
@@ -313,23 +373,53 @@ void OpenCodeGames::on_SCancelButton_clicked()
     CenterDisp(1);
 }
 
-void OpenCodeGames::ConnectionGames(const QJsonObject jsonObjConnGames)
+void OpenCodeGames::InstallDownload()
 {
-    //WRITE
-    QTcpSocket connection_games;
-    connection_games.connectToHost(addr, 8000);
-    connection_games.write(QString(QJsonDocument(jsonObjConnGames).toJson(QJsonDocument::Compact)).toStdString().c_str());
+    auto it = MapGames.find(id_game);
+    if(it != MapGames.end())
+    {
+        int id_file = it->second.id_file;
+        QJsonArray files = it->second.files;
+        QString file_name = files[id_file].toString();
+        QString dir_games = "/home/domainshax/OpenCodeGames/OpenCodeGames/Games";
+        QString dir_string = dir_games + '/' + it->second.Name;
 
-    //READ
-    connection_games.waitForReadyRead();
-    QByteArray response = connection_games.read(1000000);
+        QFile* dir = new QFile(dir_string);
+        QFile* file = new QFile(dir_string + '/' + file_name);
 
-    QFile* exec = new QFile("/home/domainshax/OpenCodeGames/OpenCodeGames/Games/LOL");
-    exec->open(QIODevice::WriteOnly);
-    exec->write(response);
-    exec->close();
+        if(!dir->exists()) QDir(dir_games).mkdir(it->second.Name);
+        if(!file->exists()) qDebug() << "lol";
 
-    qDebug() << response;
+        if(file->open(QIODevice::WriteOnly))
+        {
+            QByteArray* text_file = new QByteArray(Download->downloadedData());
+            file->write(*text_file);
+            std::cout << file_name.toStdString();
+        }
+
+        it->second.id_file++;
+    }
 }
 
-void OpenCodeGames::InstallButton(int i){ QJsonObject jsonObj; jsonObj.insert("method", "install"); jsonObj.insert("id", i); ConnectionGames(jsonObj); }
+void OpenCodeGames::InstallButton(int i)
+{
+    id_game = i;
+
+    auto it = MapGames.find(i);
+    if(it != MapGames.end())
+    {
+        QJsonArray files = it->second.files;
+        for(int file = 0; file < files.size(); file++)
+        {
+            QUrl file_url("http://www.google.it");
+
+            Download = new FileDownloader(file_url , this);
+
+            connect(Download, SIGNAL (downloaded()), this, SLOT (InstallDownload()));
+        }
+
+        it->second.id_file = 0;
+        Games_List();
+    }
+}
+

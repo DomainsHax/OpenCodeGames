@@ -1,7 +1,13 @@
 #ifndef OPENCODEGAMES_H
 #define OPENCODEGAMES_H
 
+#include "filedownloader.h"
+
 #include <QWidget>
+#include <QLabel>
+#include <QPushButton>
+#include <QGridLayout>
+
 #include <QtNetwork>
 #include <QTcpSocket>
 
@@ -9,13 +15,25 @@ namespace Ui {
 class OpenCodeGames;
 }
 
-struct StructGames
+struct Games
 {
+    QString token_install;
     int ID;
     QString Name;
     QString Server;
     int Port;
     QString Version;
+    QJsonArray files;
+    int id_file = 0;
+    bool end_install = false;
+
+    QWidget* GameStatus = new QWidget();
+    QWidget* pic = new QWidget();
+    QLabel* NameLabel = new QLabel();
+    QGridLayout* GameStatusLayout = new QGridLayout();
+    int status;
+    QPushButton* Status = new QPushButton();
+    QString dir;
 };
 
 class OpenCodeGames : public QWidget
@@ -26,10 +44,11 @@ public:
     explicit OpenCodeGames(QWidget *parent = 0);
     ~OpenCodeGames();
     void Connection(const QJsonObject jsonObjConn);
-    void ConnectionGames(const QJsonObject jsonObj);
+    void ConnectionGames(const QJsonObject jsonObjConnGames);
     void StartPageDisp(int disposition);
     void CenterDisp(int disposition);
     std::string json_to_string(const QJsonObject jsonObj);
+    void StatusGame(int id_game, int status);
 
 private slots:
     void GamesListConnect();
@@ -48,16 +67,22 @@ private slots:
     void SettingsPassword();
     void Games_List();
     void InstallButton(int);
+    void InstallDownload();
 
 private:
     Ui::OpenCodeGames *ui;
     QHostAddress addr;
+    QString os;
+    int architecture;
     QString username, token;
     bool LoginCompleted = false, RegisterCompleted = false;
     int LevelValue, ProgressValue, ProgressEnd, Progress;
     float ProgressPercentual;
-    int AfterID = 1;
-    std::map<int, StructGames> MapGames;
+
+    std::map<int, Games> MapGames;
+    FileDownloader* Download;
+    int id_game = NULL;
+    QVBoxLayout *GamesLayout = new QVBoxLayout;
 };
 
 #endif // OPENCODEGAMES_H

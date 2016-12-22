@@ -12,9 +12,11 @@ TARGET = OpenCodeGames
 TEMPLATE = app
 
 SOURCES += main.cpp\
-        opencodegames.cpp
+        opencodegames.cpp\
+        filedownloader.cpp
 
-HEADERS  += opencodegames.h
+HEADERS  += opencodegames.h\
+         filedownloader.h
 
 CONFIG   += c++14
 
