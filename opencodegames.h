@@ -49,6 +49,9 @@ public:
     void CenterDisp(int disposition);
     std::string json_to_string(const QJsonObject jsonObj);
     void StatusGame(int id_game, int status);
+    void ResetSettings();
+    void NewsInfo();
+    void News();
 
 private slots:
     void GamesListConnect();
@@ -67,7 +70,7 @@ private slots:
     void SettingsPassword();
     void Games_List();
     void InstallButton(int);
-    void InstallDownload();
+    void makefile();
 
 private:
     Ui::OpenCodeGames *ui;
@@ -83,6 +86,13 @@ private:
     FileDownloader* Download;
     int id_game = NULL;
     QVBoxLayout *GamesLayout = new QVBoxLayout;
+
+    QStringList list_file = {"lol.txt", "ciao.txt"};
+    bool download_process = false;
+    int li = 0;
+
+    QJsonArray ArrayNews;
+    QGridLayout *NewsLayout = new QGridLayout;
 };
 
 #endif // OPENCODEGAMES_H
