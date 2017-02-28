@@ -239,9 +239,9 @@
       <property name="geometry">
        <rect>
         <x>5</x>
-        <y>135</y>
+        <y>129</y>
         <width>330</width>
-        <height>237</height>
+        <height>246</height>
        </rect>
       </property>
       <property name="styleSheet">
@@ -1092,7 +1092,7 @@ Password:</string>
      <string notr="true">border-image: url(:/images/LogText.png);</string>
     </property>
     <property name="text">
-     <string>dddddd</string>
+     <string/>
     </property>
     <property name="maxLength">
      <number>32</number>
@@ -1119,7 +1119,7 @@ Password:</string>
      <string notr="true">border-image: url(:/images/LogText.png);</string>
     </property>
     <property name="text">
-     <string>DomainsHax</string>
+     <string/>
     </property>
     <property name="maxLength">
      <number>16</number>

@@ -1,8 +1,6 @@
 #ifndef OPENCODEGAMES_H
 #define OPENCODEGAMES_H
 
-#include "filedownloader.h"
-
 #include <QWidget>
 #include <QLabel>
 #include <QPushButton>
@@ -69,8 +67,6 @@ private slots:
     void SettingsUsername();
     void SettingsPassword();
     void Games_List();
-    void InstallButton(int);
-    void makefile();
 
 private:
     Ui::OpenCodeGames *ui;
@@ -83,7 +79,6 @@ private:
     float ProgressPercentual;
 
     std::map<int, Games> MapGames;
-    FileDownloader* Download;
     int id_game = NULL;
     QVBoxLayout *GamesLayout = new QVBoxLayout;
 
